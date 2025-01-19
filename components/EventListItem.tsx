@@ -8,7 +8,7 @@ import SupaImage from './SupaImage';
 
 import { supabase } from '~/utils/supabase';
 
-export default function EventListItem({ event }) {
+export default function EventListItem({ event }: { event: any }) { // Explicitly define event type
   const [numberOfAttendees, setNumberOfAttendees] = useState(0);
 
   useEffect(() => {
@@ -21,7 +21,7 @@ export default function EventListItem({ event }) {
       .select('*', { count: 'exact', head: true })
       .eq('event_id', event.id);
 
-    setNumberOfAttendees(count);
+    setNumberOfAttendees(count || 0); // Handle potential null value
   };
 
   return (

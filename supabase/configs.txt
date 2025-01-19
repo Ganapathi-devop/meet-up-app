@@ -1,0 +1,3 @@
+
+project name: meetup-app
+superbase account db password: superbasetoken
