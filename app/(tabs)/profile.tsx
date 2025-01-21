@@ -53,7 +53,6 @@ export default function Profile() {
     username,
     website,
     avatar_url,
-    full_name,
   }: {
     username: string;
     website: string;
@@ -66,9 +65,6 @@ export default function Profile() {
       const updates = {
         id: session?.user.id,
         username,
-        website,
-        avatar_url,
-        full_name,
         updated_at: new Date(),
       };
 
@@ -90,17 +86,6 @@ export default function Profile() {
     <View className="flex-1 gap-3 bg-white p-5">
       <Stack.Screen options={{ title: 'Profile' }} />
 
-      <View className="items-center ">
-        <Avatar
-          size={200}
-          url={avatarUrl}
-          onUpload={(url: string) => {
-            setAvatarUrl(url);
-            updateProfile({ username, website, avatar_url: url });
-          }}
-        />
-      </View>
-
       <TextInput
         editable={false}
         value={session.user.email}
@@ -109,13 +94,6 @@ export default function Profile() {
         className="rounded-md border border-gray-200 p-3 text-gray-600"
       />
 
-      <TextInput
-        onChangeText={(text) => setFullName(text)}
-        value={fullName}
-        placeholder="full name"
-        autoCapitalize="none"
-        className="rounded-md border border-gray-200 p-3"
-      />
 
       <TextInput
         onChangeText={(text) => setUsername(text)}
@@ -125,17 +103,9 @@ export default function Profile() {
         className="rounded-md border border-gray-200 p-3"
       />
 
-      <TextInput
-        onChangeText={(text) => setWebsite(text)}
-        value={website}
-        placeholder="website"
-        autoCapitalize="none"
-        className="rounded-md border border-gray-200 p-3"
-      />
-
       <Pressable
         onPress={() =>
-          updateProfile({ username, website, avatar_url: avatarUrl, full_name: fullName })
+          updateProfile({ username})
         }
         disabled={loading}
         className="items-center rounded-md border-2 border-red-500 p-3 px-8">
