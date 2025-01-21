@@ -1,4 +1,4 @@
-import { Stack } from 'expo-router';
+import { ExpoRoot, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Alert, Button, Pressable, TextInput, View, Text } from 'react-native';
 
@@ -20,6 +20,14 @@ export default function Profile() {
     if (session) getProfile();
   }, [session]);
 
+  const uploadImg = async (url) => {
+    const { data, error } = await supabase.storage.from('avatars').upload('/profiles/', url);
+    if (error) {
+      console.log(error,"upload img error")
+      throw error;
+    }
+    return data
+  };
   async function getProfile() {
     try {
       setLoading(true);
@@ -49,31 +57,33 @@ export default function Profile() {
     }
   }
 
-  async function updateProfile({
-    username,
-    website,
-    avatar_url,
-  }: {
-    username: string;
-    website: string;
-    avatar_url: string;
-  }) {
+  async function updateProfile() {
+    console.log("clicked")
     try {
+      
       setLoading(true);
       if (!session?.user) throw new Error('No user on the session!');
+
+      // const image_url = await uploadImg(avatarUrl);
 
       const updates = {
         id: session?.user.id,
         username,
-        updated_at: new Date(),
+        website,
+        avatar_url:"testing",
+        full_name:fullName
       };
 
-      const { error } = await supabase.from('profiles').upsert(updates);
+      console.log(updates, "updated info of profile")
 
+      const { data, error } = await supabase.from('profiles').upsert(updates);
+      console.log(data, "profile");
+      console.log(error, "profile error");
       if (error) {
         throw error;
       }
     } catch (error) {
+      console.log(error)
       if (error instanceof Error) {
         Alert.alert(error.message);
       }
@@ -86,6 +96,17 @@ export default function Profile() {
     <View className="flex-1 gap-3 bg-white p-5">
       <Stack.Screen options={{ title: 'Profile' }} />
 
+      <View className="items-center ">
+        <Avatar
+          size={200}
+          url={avatarUrl}
+          onUpload={(url: string) => {
+            setAvatarUrl(url);
+            updateProfile({ username, website, avatar_url: url });
+          }}
+        />
+      </View>
+
       <TextInput
         editable={false}
         value={session.user.email}
@@ -94,6 +115,13 @@ export default function Profile() {
         className="rounded-md border border-gray-200 p-3 text-gray-600"
       />
 
+      <TextInput
+        onChangeText={(text) => setFullName(text)}
+        value={fullName}
+        placeholder="full name"
+        autoCapitalize="none"
+        className="rounded-md border border-gray-200 p-3"
+      />
 
       <TextInput
         onChangeText={(text) => setUsername(text)}
@@ -103,9 +131,17 @@ export default function Profile() {
         className="rounded-md border border-gray-200 p-3"
       />
 
+      <TextInput
+        onChangeText={(text) => setWebsite(text)}
+        value={website}
+        placeholder="website"
+        autoCapitalize="none"
+        className="rounded-md border border-gray-200 p-3"
+      />
+
       <Pressable
         onPress={() =>
-          updateProfile({ username})
+          updateProfile()
         }
         disabled={loading}
         className="items-center rounded-md border-2 border-red-500 p-3 px-8">
