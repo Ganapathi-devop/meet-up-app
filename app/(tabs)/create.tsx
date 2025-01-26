@@ -47,7 +47,7 @@ export default function CreateEvent() {
       setDate('');
       setLocation('');
       console.log(data);
-      router.push(`/event/${data.id}`);
+      router.push(`/events/${data.id}`);
     }
 
     setLoading(false);

@@ -102,7 +102,7 @@ export default function Profile() {
           url={avatarUrl}
           onUpload={(url: string) => {
             setAvatarUrl(url);
-            updateProfile({ username, website, avatar_url: url });
+            updateProfile();
           }}
         />
       </View>

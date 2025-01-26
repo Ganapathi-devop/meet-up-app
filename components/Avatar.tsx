@@ -33,6 +33,7 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
         setAvatarUrl(fr.result as string);
       };
     } catch (error) {
+      console.error(error)
       if (error instanceof Error) {
         console.log('Error downloading image: ', error.message);
       }
@@ -72,6 +73,8 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
         .upload(path, arraybuffer, {
           contentType: image.mimeType ?? 'image/jpeg',
         });
+        
+        console.log(data, uploadError, "storage response");
 
       if (uploadError) {
         throw uploadError;
