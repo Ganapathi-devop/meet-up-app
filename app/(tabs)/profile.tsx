@@ -11,7 +11,6 @@ export default function Profile() {
   const [username, setUsername] = useState('');
   const [website, setWebsite] = useState('');
   const [fullName, setFullName] = useState('');
-
   const [avatarUrl, setAvatarUrl] = useState('');
 
   const { session } = useAuth();
@@ -23,11 +22,12 @@ export default function Profile() {
   const uploadImg = async (url) => {
     const { data, error } = await supabase.storage.from('avatars').upload('/profiles/', url);
     if (error) {
-      console.log(error,"upload img error")
+      console.log(error, "upload img error");
       throw error;
     }
-    return data
+    return data;
   };
+
   async function getProfile() {
     try {
       setLoading(true);
@@ -45,7 +45,7 @@ export default function Profile() {
       if (data) {
         setUsername(data.username);
         setWebsite(data.website);
-        setAvatarUrl(data.avatar_url);
+        setAvatarUrl(data.avatar_url || ''); // Ensure avatarUrl is set to an empty string if null
         setFullName(data.full_name);
       }
     } catch (error) {
@@ -58,32 +58,23 @@ export default function Profile() {
   }
 
   async function updateProfile() {
-    console.log("clicked")
     try {
-      
       setLoading(true);
       if (!session?.user) throw new Error('No user on the session!');
-
-      // const image_url = await uploadImg(avatarUrl);
 
       const updates = {
         id: session?.user.id,
         username,
         website,
-        avatar_url:"testing",
-        full_name:fullName
+        avatar_url: avatarUrl, // Ensure this is set correctly
+        full_name: fullName
       };
 
-      console.log(updates, "updated info of profile")
-
       const { data, error } = await supabase.from('profiles').upsert(updates);
-      console.log(data, "profile");
-      console.log(error, "profile error");
       if (error) {
         throw error;
       }
     } catch (error) {
-      console.log(error)
       if (error instanceof Error) {
         Alert.alert(error.message);
       }
@@ -140,9 +131,7 @@ export default function Profile() {
       />
 
       <Pressable
-        onPress={() =>
-          updateProfile()
-        }
+        onPress={() => updateProfile()}
         disabled={loading}
         className="items-center rounded-md border-2 border-red-500 p-3 px-8">
         <Text className="text-lg font-bold text-red-500">Save</Text>
